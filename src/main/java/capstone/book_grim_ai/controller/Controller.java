@@ -35,7 +35,7 @@ public class Controller {
             // ControlNet 돌리기
             File file = new File("/home/origin_img/" + img.getOriginalFilename());
             img.transferTo(file);
-            ProcessBuilder pb = new ProcessBuilder("sudo","python3.10", "~/ControlNet-with-Anything-v4/book_grim.py", "-img", file.getPath(),"-p", prompt);
+            ProcessBuilder pb = new ProcessBuilder("sudo","python3.10", "/home/ControlNet-with-Anything-v4/book_grim.py", "-img", file.getPath(),"-p", prompt);
             Process controlnet = pb.start();
             controlnet.waitFor();
             BufferedReader stdOut = new BufferedReader( new InputStreamReader(controlnet.getInputStream()) );
