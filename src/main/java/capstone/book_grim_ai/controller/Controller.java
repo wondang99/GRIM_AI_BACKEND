@@ -30,16 +30,19 @@ public class Controller {
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public ResponseEntity<byte[]> createCharacter(@RequestPart(value = "prompt") String prompt,
                                                   @RequestPart(value = "image") MultipartFile img) throws IOException {
-        // ControlNet 돌리기
-        File file = new File("C:\\Users\\99san\\new.jpg");
-        img.transferTo(file);
-        ProcessBuilder pb = new ProcessBuilder("sudo python3.10 ~/ControlNet-with-Anything-v4/book_grim.py -img " + file.getPath() + " -p "+ prompt);
-        pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-        pb.redirectError(ProcessBuilder.Redirect.INHERIT);
 
-        Process controlnet = pb.start();
         try {
+            // ControlNet 돌리기
+            File file = new File("C:\\Users\\99san\\new.jpg");
+            img.transferTo(file);
+            ProcessBuilder pb = new ProcessBuilder("sudo python3.10 ~/ControlNet-with-Anything-v4/book_grim.py -img " + file.getPath() + " -p "+ prompt);
+            Process controlnet = pb.start();
             controlnet.waitFor();
+            BufferedReader stdOut = new BufferedReader( new InputStreamReader(controlnet.getInputStream()) );
+            String str;
+            while( (str = stdOut.readLine()) != null ) {
+                System.out.println(str);
+            }
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
