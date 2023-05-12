@@ -30,7 +30,7 @@ public class Controller {
     public ResponseEntity<byte[]> createCharacter(@RequestPart(value = "prompt") String prompt,
                                                   @RequestPart(value = "image") MultipartFile img) throws IOException {
         // ControlNet 돌리기
-        File file = new File("./resources/origin_img/" + img.getOriginalFilename());
+        File file = new File("~/origin_img/" + img.getOriginalFilename());
 
         img.transferTo(file);
         Runtime.getRuntime().exec("cmd ~/ControlNet-with-Anything-v4 " + "sudo python3.10 book_grim.py -img " + file.getPath() + " -p \""+ prompt +"\"");
