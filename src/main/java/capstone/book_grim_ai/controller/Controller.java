@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.slf4j.Logger;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -30,13 +31,12 @@ public class Controller {
     public ResponseEntity<byte[]> createCharacter(@RequestPart(value = "prompt") String prompt,
                                                   @RequestPart(value = "image") MultipartFile img) throws IOException {
         // ControlNet 돌리기
-
-        File file = new File("/home/origin_img/" + img.getOriginalFilename());
-
+        File file = new File("C:\\Users\\99san\\new.jpg");
         img.transferTo(file);
-        ProcessBuilder pb = new ProcessBuilder("sudo python3.10 ~/ControlNet-with-Anything-v4/book_grim.py -img " + file.getPath() + " -p \""+ prompt +"\"");
+        ProcessBuilder pb = new ProcessBuilder("sudo python3.10 ~/ControlNet-with-Anything-v4/book_grim.py -img " + file.getPath() + " -p "+ prompt);
         pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
         pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+
         Process controlnet = pb.start();
         try {
             controlnet.waitFor();
