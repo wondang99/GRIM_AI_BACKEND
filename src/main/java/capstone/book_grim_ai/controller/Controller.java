@@ -47,7 +47,7 @@ public class Controller {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        InputStream imageStream = new FileInputStream("/home/ControlNet-with-anything-v4/results/output.png");
+        InputStream imageStream = new FileInputStream("/home/ControlNet-with-Anything-v4/results/output.png");
         byte[] imageByteArray = IOUtils.toByteArray(imageStream);
         imageStream.close();
         return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
