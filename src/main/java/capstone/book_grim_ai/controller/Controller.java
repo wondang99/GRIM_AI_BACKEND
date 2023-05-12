@@ -34,7 +34,7 @@ public class Controller {
         File file = new File("/home/origin_img/" + img.getOriginalFilename());
 
         img.transferTo(file);
-        Runtime.getRuntime().exec("cmd ~/ControlNet-with-Anything-v4 " + "sudo python3.10 book_grim.py -img " + file.getPath() + " -p \""+ prompt +"\"");
+        Runtime.getRuntime().exec("sudo python3.10 ~/ControlNet-with-Anything-v4/book_grim.py -img " + file.getPath() + " -p \""+ prompt +"\"");
 
         InputStream imageStream = new FileInputStream("~/ControlNet-with-anything-v4/results/output.png");
         byte[] imageByteArray = IOUtils.toByteArray(imageStream);
