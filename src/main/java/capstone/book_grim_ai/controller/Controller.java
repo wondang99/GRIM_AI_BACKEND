@@ -33,7 +33,7 @@ public class Controller {
 
         try {
             // ControlNet 돌리기
-            File file = new File("C:\\Users\\99san\\new.jpg");
+            File file = new File("/home/origin_img/" + img.getOriginalFilename());
             img.transferTo(file);
             ProcessBuilder pb = new ProcessBuilder("sudo python3.10 ~/ControlNet-with-Anything-v4/book_grim.py -img " + file.getPath() + " -p "+ prompt);
             Process controlnet = pb.start();
