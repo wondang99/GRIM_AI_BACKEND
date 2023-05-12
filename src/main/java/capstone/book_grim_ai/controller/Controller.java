@@ -31,12 +31,12 @@ public class Controller {
                                                   @RequestPart(value = "image") MultipartFile img) throws IOException {
         // ControlNet 돌리기
 
-        File file = new File("/~/origin_img/" + img.getOriginalFilename());
+        File file = new File("/home/origin_img/" + img.getOriginalFilename());
 
         img.transferTo(file);
         Runtime.getRuntime().exec("cmd ~/ControlNet-with-Anything-v4 " + "sudo python3.10 book_grim.py -img " + file.getPath() + " -p \""+ prompt +"\"");
 
-        InputStream imageStream = new FileInputStream("/~/ControlNet-with-anything-v4/results/output.png");
+        InputStream imageStream = new FileInputStream("~/ControlNet-with-anything-v4/results/output.png");
         byte[] imageByteArray = IOUtils.toByteArray(imageStream);
         imageStream.close();
         return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
