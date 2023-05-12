@@ -20,6 +20,11 @@ import java.nio.file.Paths;
 public class Controller {
     private final Service service;
 
+    @GetMapping
+    public String test(){
+        return "this is test";
+    }
+
     @PostMapping(value = "",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public ResponseEntity<byte[]> createCharacter(@RequestPart(value = "prompt") String prompt,
