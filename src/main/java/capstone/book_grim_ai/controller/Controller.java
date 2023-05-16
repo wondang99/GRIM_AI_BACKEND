@@ -15,6 +15,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class Controller {
             ProcessBuilder pb = new ProcessBuilder("sudo","python3.10", "/home/ControlNet-with-Anything-v4/book_grim.py", "-img", file.getPath(),"-p", prompt);
             Process controlnet = pb.start();
             log.debug("start the process...");
-            controlnet.waitFor();
+            controlnet.waitFor(60, TimeUnit.SECONDS);
             BufferedReader stdOut = new BufferedReader( new InputStreamReader(controlnet.getInputStream()) );
             String str;
             StringBuilder builder = new StringBuilder();
