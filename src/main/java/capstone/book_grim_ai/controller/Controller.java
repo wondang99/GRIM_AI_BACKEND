@@ -35,6 +35,7 @@ public class Controller {
                                                   @RequestPart(value = "image") MultipartFile img) throws IOException {
         log.debug("start create character...");
         try {
+            log.debug("multipart img : " + img.toString());
             log.debug("originalFileName : " + img.getOriginalFilename());
             // ControlNet 돌리기
             File file = new File("/home/origin_img/" + img.getOriginalFilename());
