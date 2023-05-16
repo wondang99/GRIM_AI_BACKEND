@@ -44,10 +44,13 @@ public class Controller {
             controlnet.waitFor();
             BufferedReader stdOut = new BufferedReader( new InputStreamReader(controlnet.getInputStream()) );
             String str;
+            StringBuilder builder = new StringBuilder();
             while( (str = stdOut.readLine()) != null ) {
-                System.out.println(str);
-                log.debug(str);
+                builder.append(str);
+                builder.append(System.getProperty("line.separator"));
             }
+            log.debug("resposne : " + builder.toString());
+            log.debug("end process...");
 
         } catch (InterruptedException e) {
             log.error(e.getMessage());
