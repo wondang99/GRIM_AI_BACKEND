@@ -29,9 +29,9 @@ public class Controller {
         return "this is test";
     }
 
-    @PostMapping(value = "",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public ResponseEntity<byte[]> createCharacter(@RequestPart(value = "prompt") String prompt,
+    public @ResponseBody byte[] createCharacter(@RequestPart(value = "prompt") String prompt,
                                                   @RequestPart(value = "image") MultipartFile img) throws IOException {
         log.debug("start create character...");
         try {
@@ -58,10 +58,9 @@ public class Controller {
             throw new RuntimeException(e);
         }
 
-        InputStream imageStream = new FileInputStream("/home/ControlNet-with-Anything-v4/results/output.png");
-        byte[] imageByteArray = IOUtils.toByteArray(imageStream);
-        log.debug("response... : " + imageByteArray.toString());
-        imageStream.close();
-        return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
+        byte[] bytes = Files.readAllBytes(Paths.get("/home/ControlNet-with-Anything-v4/results/output.png"));
+        log.debug("response... : " + bytes.toString());
+
+        return bytes;
     }
 }
