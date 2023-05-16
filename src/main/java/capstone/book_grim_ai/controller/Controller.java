@@ -3,6 +3,7 @@ package capstone.book_grim_ai.controller;
 import capstone.book_grim_ai.service.Service;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.nio.file.Paths;
 @RequestMapping("/api")
 public class Controller {
     private final Service service;
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     @GetMapping
     public String test(){
@@ -30,25 +32,31 @@ public class Controller {
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public ResponseEntity<byte[]> createCharacter(@RequestPart(value = "prompt") String prompt,
                                                   @RequestPart(value = "image") MultipartFile img) throws IOException {
-
+        log.debug("start create character...");
         try {
             // ControlNet 돌리기
             File file = new File("/home/origin_img/" + img.getOriginalFilename());
             img.transferTo(file);
+            log.debug("created image file...");
             ProcessBuilder pb = new ProcessBuilder("sudo","python3.10", "/home/ControlNet-with-Anything-v4/book_grim.py", "-img", file.getPath(),"-p", prompt);
             Process controlnet = pb.start();
+            log.debug("start the process...");
             controlnet.waitFor();
             BufferedReader stdOut = new BufferedReader( new InputStreamReader(controlnet.getInputStream()) );
             String str;
             while( (str = stdOut.readLine()) != null ) {
                 System.out.println(str);
+                log.debug(str);
             }
 
         } catch (InterruptedException e) {
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
+
         InputStream imageStream = new FileInputStream("/home/ControlNet-with-Anything-v4/results/output.png");
         byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+        log.debug("response... : " + imageByteArray.toString());
         imageStream.close();
         return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
     }
