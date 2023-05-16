@@ -47,10 +47,10 @@ public class Controller {
             File logs = new File("/home/origin_img/log");
             ProcessBuilder pb = new ProcessBuilder("sudo","python3.10", "/home/ControlNet-with-Anything-v4/book_grim.py", "-img", file.getPath(),"-p", prompt);
             pb.redirectOutput(logs);
+            pb.redirectError(logs);
             Process controlnet = pb.start();
             log.debug("start the process...");
             controlnet.waitFor();
-
             log.debug("end process...");
 
         } catch (InterruptedException e) {
