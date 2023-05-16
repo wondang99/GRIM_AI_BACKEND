@@ -44,18 +44,14 @@ public class Controller {
                 log.debug("file exist!");
             }
             log.debug("created image file...");
+            File logs = new File("/home/origin_img/log.txt");
+            logs.mkdir();
             ProcessBuilder pb = new ProcessBuilder("sudo","python3.10", "/home/ControlNet-with-Anything-v4/book_grim.py", "-img", file.getPath(),"-p", prompt);
+            pb.redirectOutput(logs);
             Process controlnet = pb.start();
             log.debug("start the process...");
             controlnet.waitFor();
-            BufferedReader stdOut = new BufferedReader( new InputStreamReader(controlnet.getInputStream()) );
-            String str;
-            StringBuilder builder = new StringBuilder();
-            while( (str = stdOut.readLine()) != null ) {
-                builder.append(str);
-                builder.append(System.getProperty("line.separator"));
-            }
-            log.debug("resposne : " + builder.toString());
+
             log.debug("end process...");
 
         } catch (InterruptedException e) {
