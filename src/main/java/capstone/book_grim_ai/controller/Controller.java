@@ -35,9 +35,13 @@ public class Controller {
                                                   @RequestPart(value = "image") MultipartFile img) throws IOException {
         log.debug("start create character...");
         try {
+            log.debug(img.getOriginalFilename());
             // ControlNet 돌리기
             File file = new File("/home/origin_img/" + img.getOriginalFilename());
             img.transferTo(file);
+            if(file.exists()){
+                log.debug("file exist!");
+            }
             log.debug("created image file...");
             ProcessBuilder pb = new ProcessBuilder("sudo","python3.10", "/home/ControlNet-with-Anything-v4/book_grim.py", "-img", file.getPath(),"-p", prompt);
             Process controlnet = pb.start();

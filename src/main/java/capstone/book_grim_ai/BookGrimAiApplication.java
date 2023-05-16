@@ -7,10 +7,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 
 @SpringBootApplication
 public class BookGrimAiApplication {
-	public static void main(String[] args) {;
+	public static void main(String[] args) {
 		SpringApplication.run(BookGrimAiApplication.class, args);
 	}
 
