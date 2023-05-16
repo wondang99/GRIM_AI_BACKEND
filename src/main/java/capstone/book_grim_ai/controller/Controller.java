@@ -45,7 +45,7 @@ public class Controller {
             }
             log.debug("created image file...");
             File logs = new File("/home/origin_img/log.txt");
-            logs.mkdir();
+            logs.createNewFile();
             ProcessBuilder pb = new ProcessBuilder("sudo","python3.10", "/home/ControlNet-with-Anything-v4/book_grim.py", "-img", file.getPath(),"-p", prompt);
             pb.redirectOutput(logs);
             Process controlnet = pb.start();
