@@ -21,8 +21,8 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class Controller {
-
     //test
+
     private final Service service;
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
@@ -34,7 +34,7 @@ public class Controller {
     @PostMapping(value = "",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public @ResponseBody byte[] createCharacter(@RequestPart(value = "prompt") String prompt,
-                                                  @RequestPart(value = "image") MultipartFile img) throws IOException {
+                                                @RequestPart(value = "image") MultipartFile img) throws IOException {
         log.debug("start create character...");
         try {
             log.debug("multipart img : " + img.getBytes());
