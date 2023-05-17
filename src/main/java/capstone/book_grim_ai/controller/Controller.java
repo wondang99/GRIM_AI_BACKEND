@@ -2,6 +2,7 @@ package capstone.book_grim_ai.controller;
 
 import capstone.book_grim_ai.service.Service;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class Controller {
-
-    //test
     private final Service service;
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
@@ -33,8 +32,9 @@ public class Controller {
 
     @PostMapping(value = "",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public @ResponseBody byte[] createCharacter(@RequestPart(value = "prompt") String prompt,
-                                                  @RequestPart(value = "image") MultipartFile img) throws IOException {
+    public @ResponseBody byte[] createCharacter(
+            @RequestPart(value = "prompt") String prompt,
+            @RequestPart(value = "image") MultipartFile img) throws IOException {
         log.debug("start create character...");
         try {
             log.debug("multipart img : " + img.getBytes());
@@ -65,4 +65,78 @@ public class Controller {
 
         return bytes;
     }
+
+    @PostMapping(value ="/createPage",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.IMAGE_JPEG_VALUE)
+    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    public @ResponseBody byte[] createPage(
+            @RequestPart(value = "prompt") String prompt,
+            @RequestPart(value = "back") MultipartFile back,
+            @RequestPart(value = "character") MultipartFile character
+    ) throws IOException {
+
+        // image remove 하는 거 먼저 실행
+        // 그 뒤에 merge
+        log.debug("start Page character...");
+        try {
+
+            String cache_image_path = "/home/image_processing/cache_img/";
+
+            log.debug("back img : " + back.getBytes());
+            log.debug("back originalFileName : " + back.getOriginalFilename());
+
+            log.debug("character img : " + character.getBytes());
+            log.debug("character originalFileName : " + character.getOriginalFilename());
+            // ControlNet 돌리기
+            File back_file = new File(cache_image_path + back.getOriginalFilename());
+            File charac_file = new File(cache_image_path + character.getOriginalFilename());
+
+            back.transferTo(back_file);
+            character.transferTo(charac_file);
+
+            File logs = new File(cache_image_path+"log");
+
+            log.debug("remove character back_ground...");
+            ProcessBuilder rm = new ProcessBuilder("sudo","python3.10", "/home/image_processing/remove.py",charac_file.getPath() );
+            rm.redirectOutput(logs);
+            rm.redirectError(logs);
+            Process remove = rm.start();
+            log.debug("start remove...");
+            remove.waitFor();
+            log.debug("end remove...");
+
+
+            String remove_charac_path = cache_image_path+ FilenameUtils.removeExtension(character.getOriginalFilename())+".png";
+            log.debug("remomve charac path : ",remove_charac_path);
+
+            log.debug("created image file...");
+            // dreambooth part
+//            ProcessBuilder pb = new ProcessBuilder("sudo","python3.10", "/home/ControlNet-with-Anything-v4/book_grim.py", "-img", file.getPath(),"-p", prompt);
+//            pb.redirectOutput(logs);
+//            pb.redirectError(logs);
+//            Process controlnet = pb.start();
+//            log.debug("start the process...");
+//            controlnet.waitFor();
+//            log.debug("end process...");
+            log.debug("end create image");
+
+
+            log.debug("merge image...");
+            ProcessBuilder mg = new ProcessBuilder("sudo","python3.10", "/home/image_processing/merge.py", back_file.getPath(),remove_charac_path );
+            mg.redirectOutput(logs);
+            mg.redirectError(logs);
+            Process merge = mg.start();
+            log.debug("start remove...");
+            merge.waitFor();
+            log.debug("end remove...");
+
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+        byte[] bytes = Files.readAllBytes(Paths.get("/home/image_processing/story.png"));
+        log.debug("response... : " + bytes.toString());
+
+        return bytes;
+    }
+
 }
