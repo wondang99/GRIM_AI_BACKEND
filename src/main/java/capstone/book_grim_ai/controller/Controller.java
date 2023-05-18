@@ -17,6 +17,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 @RestController
 @RequiredArgsConstructor
@@ -66,6 +72,7 @@ public class Controller {
         return bytes;
     }
 
+
     @PostMapping(value ="/createPage",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public @ResponseBody byte[] createPage(
@@ -79,8 +86,13 @@ public class Controller {
         log.debug("start Page character...");
         try {
 
-            String cache_image_path = "/home/image_processing/cache_img/";
+            String cache_image_path = "/home/g0521sansan/image_processing/cache_img/";
 
+	    // test
+	    
+	    // test
+
+	    log.debug("cahe"+cache_image_path);
             log.debug("back img : " + back.getBytes());
             log.debug("back originalFileName : " + back.getOriginalFilename());
 
@@ -94,9 +106,17 @@ public class Controller {
             character.transferTo(charac_file);
 
             File logs = new File(cache_image_path+"log");
+	    File mlogs = new File(cache_image_path+"mlog");
 
-            log.debug("remove character back_ground...");
-            ProcessBuilder rm = new ProcessBuilder("sudo","python3.10", "/home/image_processing/remove.py",charac_file.getPath() );
+            List<String> cmd = new ArrayList<String>();
+	    cmd.add("/usr/bin/python3");
+	    cmd.add("/home/g0521sansan/image_processing/remove.py");
+	    cmd.add(charac_file.getPath());
+	
+	    log.debug("remove character back_ground...");
+            ProcessBuilder rm = new ProcessBuilder("/usr/bin/python3", "/home/g0521sansan/image_processing/remove.py",charac_file.getPath());
+	    log.debug("check command : "+rm.command()); 
+	    log.debug("charac_file path : "+charac_file.getPath());
             rm.redirectOutput(logs);
             rm.redirectError(logs);
             Process remove = rm.start();
@@ -104,9 +124,14 @@ public class Controller {
             remove.waitFor();
             log.debug("end remove...");
 
+	    //test 
+	    //test
 
-            String remove_charac_path = cache_image_path+ FilenameUtils.removeExtension(character.getOriginalFilename())+".png";
-            log.debug("remomve charac path : ",remove_charac_path);
+
+            String remove_charac_path = cache_image_path+FilenameUtils.removeExtension(character.getOriginalFilename())+"_rm."+FilenameUtils.getExtension(character.getOriginalFilename());
+	    log.debug("cahe imge  path : "+ cache_image_path);
+            log.debug("charac name "+FilenameUtils.removeExtension(character.getOriginalFilename()));
+	    log.debug("remomve charac path :" +remove_charac_path);
 
             log.debug("created image file...");
             // dreambooth part
@@ -121,22 +146,23 @@ public class Controller {
 
 
             log.debug("merge image...");
-            ProcessBuilder mg = new ProcessBuilder("sudo","python3.10", "/home/image_processing/merge.py", back_file.getPath(),remove_charac_path );
-            mg.redirectOutput(logs);
-            mg.redirectError(logs);
+            ProcessBuilder mg = new ProcessBuilder("python3", "/home/g0521sansan/image_processing/merge.py", back_file.getPath(),remove_charac_path );
+            mg.redirectOutput(mlogs);
+            mg.redirectError(mlogs);
             Process merge = mg.start();
-            log.debug("start remove...");
+            log.debug("start merge...");
             merge.waitFor();
-            log.debug("end remove...");
+            log.debug("end merge...");
 
         } catch (InterruptedException e) {
             log.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
-        byte[] bytes = Files.readAllBytes(Paths.get("/home/image_processing/story.png"));
+
+	}
+        byte[] bytes = Files.readAllBytes(Paths.get("/home/g0521sansan/image_processing/story.png"));
         log.debug("response... : " + bytes.toString());
 
         return bytes;
+	
     }
 
 }

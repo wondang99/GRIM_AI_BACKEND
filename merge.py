@@ -21,7 +21,7 @@ def main(back_path, fore_path) :
 
 
     background = Image.open(back_path).convert("RGBA")
-    foreground = Image.open(fore_path).convert("RGBA")
+    foreground = Image.open(fore_path)
 
     #배경이 투명한 이미지 파일의 사이즈 가져오기
     (img_h, img_w) = foreground.size
@@ -36,10 +36,10 @@ def main(back_path, fore_path) :
 
     x,y = foreground.size
     #이미지 합성
-    background_back.paste(foreground, (50,50))
+    background_back.paste(foreground, (50,50),foreground)
 
     #합성한 이미지 파일 보여주기
-    background_back.save('../story.png')
+    background_back.save('/home/g0521sansan/image_processing/story.png')
 
 if __name__ == "__main__" :
     main(sys.argv[1],sys.argv[2])
