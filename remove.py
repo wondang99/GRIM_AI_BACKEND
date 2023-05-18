@@ -13,7 +13,7 @@ def main(input_path) :
 
     print(input_path)
 
-    output_path = "./remove/"+character_name+'_rm.png'
+    output_path = "/home/g0521sansan/image_processing/cache_img/"+character_name+'_rm.png'
     print(output_path)
     # Processing the image
     input = Image.open(input_path)
