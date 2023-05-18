@@ -72,6 +72,53 @@ public class Controller {
         return bytes;
     }
 
+    @PostMapping(value ="/remove",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.IMAGE_JPEG_VALUE)
+    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    public @ResponseBody byte[] removeBack(
+            @RequestPart(value = "character") MultipartFile character
+    ) throws IOException {
+        String remove_charac_path;
+        try {
+
+            String cache_image_path = "/home/g0521sansan/image_processing/cache_img/";
+
+            log.debug("cahe" + cache_image_path);
+
+            log.debug("character img : " + character.getBytes());
+            log.debug("character originalFileName : " + character.getOriginalFilename());
+
+            File charac_file = new File(cache_image_path + character.getOriginalFilename());
+
+            character.transferTo(charac_file);
+
+            File logs = new File(cache_image_path + "log");
+
+
+            log.debug("remove character back_ground...");
+            ProcessBuilder rm = new ProcessBuilder("/usr/bin/python3", "/home/g0521sansan/image_processing/remove.py", charac_file.getPath());
+            log.debug("check command : " + rm.command());
+            log.debug("charac_file path : " + charac_file.getPath());
+            rm.redirectOutput(logs);
+            rm.redirectError(logs);
+            Process remove = rm.start();
+            log.debug("start remove...");
+            remove.waitFor();
+            log.debug("end remove...");
+
+            remove_charac_path = cache_image_path+FilenameUtils.removeExtension(character.getOriginalFilename())+"_rm."+FilenameUtils.getExtension(character.getOriginalFilename());
+            log.debug("cahe imge  path : "+ cache_image_path);
+            log.debug("charac name "+FilenameUtils.removeExtension(character.getOriginalFilename()));
+            log.debug("remomve charac path :" +remove_charac_path);
+
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] bytes = Files.readAllBytes(Paths.get(remove_charac_path));
+        log.debug("response... : " + bytes.toString());
+
+        return bytes;
+    }
 
     @PostMapping(value ="/createPage",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}, produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
@@ -88,50 +135,18 @@ public class Controller {
 
             String cache_image_path = "/home/g0521sansan/image_processing/cache_img/";
 
-	    // test
-	    
-	    // test
-
-	    log.debug("cahe"+cache_image_path);
+	        log.debug("cahe"+cache_image_path);
             log.debug("back img : " + back.getBytes());
             log.debug("back originalFileName : " + back.getOriginalFilename());
 
             log.debug("character img : " + character.getBytes());
             log.debug("character originalFileName : " + character.getOriginalFilename());
-            // ControlNet 돌리기
+
             File back_file = new File(cache_image_path + back.getOriginalFilename());
             File charac_file = new File(cache_image_path + character.getOriginalFilename());
 
             back.transferTo(back_file);
             character.transferTo(charac_file);
-
-            File logs = new File(cache_image_path+"log");
-	    File mlogs = new File(cache_image_path+"mlog");
-
-            List<String> cmd = new ArrayList<String>();
-	    cmd.add("/usr/bin/python3");
-	    cmd.add("/home/g0521sansan/image_processing/remove.py");
-	    cmd.add(charac_file.getPath());
-	
-	    log.debug("remove character back_ground...");
-            ProcessBuilder rm = new ProcessBuilder("/usr/bin/python3", "/home/g0521sansan/image_processing/remove.py",charac_file.getPath());
-	    log.debug("check command : "+rm.command()); 
-	    log.debug("charac_file path : "+charac_file.getPath());
-            rm.redirectOutput(logs);
-            rm.redirectError(logs);
-            Process remove = rm.start();
-            log.debug("start remove...");
-            remove.waitFor();
-            log.debug("end remove...");
-
-	    //test 
-	    //test
-
-
-            String remove_charac_path = cache_image_path+FilenameUtils.removeExtension(character.getOriginalFilename())+"_rm."+FilenameUtils.getExtension(character.getOriginalFilename());
-	    log.debug("cahe imge  path : "+ cache_image_path);
-            log.debug("charac name "+FilenameUtils.removeExtension(character.getOriginalFilename()));
-	    log.debug("remomve charac path :" +remove_charac_path);
 
             log.debug("created image file...");
             // dreambooth part
@@ -144,9 +159,10 @@ public class Controller {
 //            log.debug("end process...");
             log.debug("end create image");
 
+            File mlogs = new File(cache_image_path+"mlog");
 
             log.debug("merge image...");
-            ProcessBuilder mg = new ProcessBuilder("python3", "/home/g0521sansan/image_processing/merge.py", back_file.getPath(),remove_charac_path );
+            ProcessBuilder mg = new ProcessBuilder("python3", "/home/g0521sansan/image_processing/merge.py", back_file.getPath(),charac_file.getPath());
             mg.redirectOutput(mlogs);
             mg.redirectError(mlogs);
             Process merge = mg.start();
