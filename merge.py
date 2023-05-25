@@ -38,7 +38,7 @@ def main(back_path, fore_path,x,y) :
 
     #x,y = foreground.size
     #이미지 합성
-    background_back.paste(foreground, (int(x),int(y)),foreground)
+    background_back.paste(foreground, (x,y),foreground)
 
     #합성한 이미지 파일 보여주기
     background_back.save('/home/g0521sansan/image_processing/story.png')
