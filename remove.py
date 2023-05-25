@@ -1,4 +1,3 @@
-# Importing Required Modules
 from rembg import remove
 from PIL import Image
 import sys
@@ -6,7 +5,7 @@ import sys
 def main(input_path) :
     # Store path of the image in the variable input_path
     # input_path =  './sangyoon1.png'
-    
+
     # Store path of the output image in the variable output_path
     # output_path = 'gfgoutput.png'
 
@@ -14,11 +13,11 @@ def main(input_path) :
 
     print(input_path)
 
-    output_path = "./remove/"+character_name+'_rm.png'
+    output_path = "/home/g0521sansan/image_processing/cache_img/"+character_name+'_rm.png'
     print(output_path)
     # Processing the image
     input = Image.open(input_path)
-    
+
     # Removing the background from the given Image
     output = remove(input)
 
