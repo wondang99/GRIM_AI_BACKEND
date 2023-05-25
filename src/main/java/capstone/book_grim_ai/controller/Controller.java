@@ -126,8 +126,8 @@ public class Controller {
             @RequestPart(value = "prompt") String prompt,
             @RequestPart(value = "back") MultipartFile back,
             @RequestPart(value = "character") MultipartFile character,
-            @RequestPart(value = "x") String x,
-            @RequestPart(value = "y") String y
+            @RequestPart(value = "x") int x,
+            @RequestPart(value = "y") int y
     ) throws IOException {
 
         // image remove 하는 거 먼저 실행
@@ -164,6 +164,12 @@ public class Controller {
             File mlogs = new File(cache_image_path+"mlog");
 
             log.debug("merge image...");
+	    // test 
+	    //
+
+	    log.debug(x+" "+y);
+
+
             ProcessBuilder mg = new ProcessBuilder("python3", "/home/g0521sansan/image_processing/merge.py", back_file.getPath(),charac_file.getPath(),x,y);
             mg.redirectOutput(mlogs);
             mg.redirectError(mlogs);
