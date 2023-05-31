@@ -55,7 +55,7 @@ public class Controller {
 
         log.debug("dreambooth prompt : " + createVariationReqDto.getPrompt());
         try {
-            ProcessBuilder pb = new ProcessBuilder("cd", stableDiffusionPath, "& python3", txt2imgPath, "--prompt",
+            ProcessBuilder pb = new ProcessBuilder("python3", txt2imgPath, "--prompt",
                     createVariationReqDto.getPrompt(), "--outdir", outputPath, "--n_samples", "1",
                     "--H", height, "--W", width, "--ckpt", checkpointPath, "--n_iter", "1", "--config", configPath);
             pb.redirectOutput(logs);
