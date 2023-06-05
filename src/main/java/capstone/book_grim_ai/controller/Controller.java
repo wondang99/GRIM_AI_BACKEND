@@ -184,13 +184,14 @@ public class Controller {
 	
     }
 
-    @PostMapping(value ="/checkGrammar",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value ="/checkGrammar",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public @ResponseBody ArrayList<String> checkGrammar(
             @RequestPart(value = "content") String content
-    ) throws IOException {
+    ) throws IOException, InterruptedException {
         ProcessBuilder check = new ProcessBuilder("python3", "/home/g0521sansan/py-hanspell/korean_check.py", "--text",content);
         Process kocheck = check.start();
+        kocheck.waitFor();
         ArrayList<String> spellList = new ArrayList<String>();
 
 //        File file = new File("E:\\2023.1\\캡스톤\\py-hanspell\\spellList.txt");

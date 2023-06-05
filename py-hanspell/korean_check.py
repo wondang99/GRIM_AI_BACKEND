@@ -8,8 +8,8 @@ if __name__ == "__main__":
     parser.add_argument('--text',  type=str,  default='./')
     args = parser.parse_args()
     
-    output_path = "./"    
-    # output_path = "/home/g0521sansan/korean_check/"
+    # output_path = "./"    
+    output_path = "/home/g0521sansan/korean_check/"
     os.remove(output_path+"spellList.txt")
     
     
